@@ -1,3 +1,14 @@
+CREATE TABLE IF NOT EXISTS website (
+    theme   TEXT    NOT NULL,
+    title   TEXT    NOT NULL,
+    admin_name   TEXT    NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS links (
+    link_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    link    TEXT    NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS posts (
     post_id INTEGER PRIMARY KEY AUTOINCREMENT,
     post_author INTEGER NOT NULL,   -- save author id
@@ -24,7 +35,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- admin can custom in the future
 CREATE TABLE IF NOT EXISTS user_roles (
     role_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    permission  INTEGER DEFAULT 1,
+    permission  INTEGER DEFAULT 1
 );
 
 -- record all permissions for customing user roles
