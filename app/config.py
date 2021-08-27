@@ -38,3 +38,6 @@ class Production(Config):
     SECRET_KEY = urandom(32)
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = getenv("DATABASE_URI")
+
+
+configs = {"development": Development, "testing": Testing, "production": Production}
