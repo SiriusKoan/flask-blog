@@ -40,4 +40,8 @@ class Production(Config):
     SQLALCHEMY_DATABASE_URI = getenv("DATABASE_URI")
 
 
-configs = {"development": Development, "testing": Testing, "production": Production}
+configs = {
+    "development": Development,
+    "testing": Testing,
+    "production": Production,
+}
