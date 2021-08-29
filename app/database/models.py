@@ -16,10 +16,10 @@ class Users(db.Model):
     register_time = db.Column(
         db.DateTime, default=datetime.datetime.now, nullable=False
     )
-    posts = db.relationship("posts")
-    comments = db.relationship("comments")
+    posts = db.relationship("Posts")
+    comments = db.relationship("Comments")
 
-    def __init__(self, username, password, email, introduction, is_admin=False):
+    def __init__(self, username, password, email, introduction=None, is_admin=False):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
@@ -37,7 +37,7 @@ class Posts(db.Model):
     title = db.Column(db.String, nullable=False, unique=True)
     description = db.Column(db.String)
     content = db.Column(db.String, nullable=False)
-    comments = db.relationship("comments")
+    comments = db.relationship("Comments")
 
     def __init__(self, author_id, title, description, content):
         self.author_id = author_id
