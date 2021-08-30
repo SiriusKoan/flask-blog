@@ -1,8 +1,10 @@
 from os import getenv
+from flask_migrate import Migrate
 from app import create_app, db
 from app.database import init, reset, add_user
 
 app = create_app(getenv("FLASK_ENV"))
+migrate = Migrate(app, db, render_as_batch=True)
 
 
 @app.shell_context_processor
