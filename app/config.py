@@ -17,6 +17,7 @@ class Testing(Config):
     ENV = "TESTING"
     TESTING = True
     SECRET_KEY = "cyn54g544mxng"
+    SERVER_NAME = "localhost"
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     # Flask-WTF

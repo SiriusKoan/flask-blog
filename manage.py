@@ -1,4 +1,5 @@
 from os import getenv
+import unittest
 from flask_migrate import Migrate
 from app import create_app, db
 from app.database import init, reset, add_user
@@ -32,3 +33,9 @@ def create_user():
         print("OK")
     else:
         print("Failed")
+
+
+@app.cli.command()
+def test():
+    tests = unittest.TestLoader().discover("tests")
+    unittest.TextTestRunner(verbosity=2).run(tests)
