@@ -1,7 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
-from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired, Length, EqualTo, Regexp, ValidationError
+from wtforms.fields.html5 import EmailField, DateField, IntegerField
+from wtforms.validators import (
+    DataRequired,
+    Length,
+    EqualTo,
+    Regexp,
+    ValidationError,
+    Optional,
+)
 from flask_pagedown.fields import PageDownField
 
 
@@ -106,3 +113,27 @@ class AddUserForm(FlaskForm):
     )
     is_admin = BooleanField("The user is an admin")
     submit = SubmitField("Add")
+
+
+class DashboardFilterForm(FlaskForm):
+    start = DateField("start", format="%Y-%m-%d", validators=[DataRequired()])
+    end = DateField("end", format="%Y-%m-%d", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class AdminDashboardFilter(FlaskForm):
+    start = DateField("start", format="%Y-%m-%d", validators=[Optional()])
+    end = DateField("end", format="%Y-%m-%d", validators=[Optional()])
+    user_id = IntegerField(
+        "User ID", render_kw={"placeholder": "User ID"}, validators=[Optional()]
+    )
+    submit = SubmitField("Submit")
+
+class UserFilterForm(FlaskForm):
+    user_id = IntegerField(
+        "User ID", render_kw={"placeholder": "User ID"}, validators=[Optional()]
+    )
+    username = StringField("Username", render_kw={"placeholder": "Username"})
+    start = DateField("start", format="%Y-%m-%d", validators=[Optional()])
+    end = DateField("end", format="%Y-%m-%d", validators=[Optional()])
+    submit = SubmitField("Submit")
