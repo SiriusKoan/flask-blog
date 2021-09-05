@@ -4,3 +4,5 @@ Flask-WTF
 Flask-Login
 Flask-Migrate
 Flask-Mail
+Flask-Pagedown
+Flask-Markdown
