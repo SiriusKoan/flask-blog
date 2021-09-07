@@ -1,4 +1,5 @@
 from .models import db, Users
+from ..user_helper import User
 
 
 def init():
@@ -18,3 +19,11 @@ def add_user(username, password, email, introduction=None, is_admin=False):
         return True
     except:
         return False
+
+def login_auth(username, password):
+    if user := Users.query.filter_by(username=username).first():
+        if user.check_password(password):
+            sessionUser = User()
+            sessionUser.id = user.id
+            return sessionUser
+    return False

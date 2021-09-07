@@ -1,0 +1,11 @@
+{% macro display_msg(messages) %}
+<div id="messages">
+    {% if messages %}
+    {% for category, message in messages %}
+        <div class="{{ category }}">
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endmacro %}

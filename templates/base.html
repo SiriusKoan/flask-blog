@@ -1,3 +1,5 @@
+{% from 'msg.jinja' import display_msg %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,6 +28,7 @@
         <span><a href="/manage_user">Manage User</a></span>
     </nav>
     <main>
+        {{ display_msg(get_flashed_messages(with_categories=True)) }}
         {% block content %}
         {% endblock %}
     </main>
