@@ -14,18 +14,20 @@
 
 <body>
     <nav>
-        <!-- unauthorized -->
+        {% if current_user.is_anonymous %}
         <span><a href="/login">Login</a></span>
         <span><a href="/register">Register</a></span>
-        <!-- normal user -->
+        {% else %}
         <span><a href="/dashboard">Dashboard</a></span>
         <span><a href="/posts">All posts</a></span>
         <span><a href="/post/add">Add post</a></span>
         <span><a href="/setting">Setting</a></span>
-        <!-- admin -->
+        {% if current_user.is_admin %}
         <span><a href="/admin_dashboard/posts">Admin Dashboard for posts</a></span>
         <span><a href="/admin_dashboard/comments">Admin Dashboard for comments</a></span>
         <span><a href="/manage_user">Manage User</a></span>
+        {% endif %}
+        {% endif %}
     </nav>
     <main>
         {{ display_msg(get_flashed_messages(with_categories=True)) }}

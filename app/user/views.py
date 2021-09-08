@@ -1,7 +1,7 @@
 from flask import flash, redirect, url_for, request, render_template
 from flask_login import login_required, current_user, login_user, logout_user
-from ..forms import LoginForm
-from ..database import login_auth
+from ..forms import LoginForm, RegisterForm, UserSettingForm
+from ..database import login_auth, add_user, render_user_data, update_user_data
 from . import user_bp
 
 
@@ -40,13 +40,53 @@ def logout_page():
 
 @user_bp.route("/register", methods=["GET", "POST"])
 def register_page():
-    pass
+    if current_user.is_active:
+        flash("You have logined.", category="info")
+        return redirect(url_for("user.dashboard_page"))
+    else:
+        form = RegisterForm()
+        if request.method == "GET":
+            return render_template("register.html", form=form)
+        if request.method == "POST":
+            if form.validate_on_submit():
+                username = form.username.data
+                password = form.password.data
+                email = form.email.data
+                if add_user(username, password, email):
+                    flash("Register successfully.", category="success")
+                    return redirect(url_for("user.login_page"))
+                else:
+                    flash("The username or the email has been used.", category="alert")
+                    return redirect(url_for("user.register_page"))
+            else:
+                for _, errors in form.errors.items():
+                    for error in errors:
+                        flash(error, category="alert")
+                return redirect(url_for("user.register_page"))
 
 
 @user_bp.route("/setting", methods=["GET", "POST"])
 @login_required
 def user_setting_page():
-    pass
+    data = render_user_data(current_user.id)
+    form = UserSettingForm(email=data["email"])
+    if request.method == "GET":
+        return render_template("user_setting.html", form=form)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            password = form.password.data
+            email = form.email.data
+            if (
+                msg := update_user_data(current_user.id, password=password, email=email)
+            ) == True:
+                flash("OK.", category="success")
+            else:
+                flash(msg, category="alert")
+        else:
+            for _, errors in form.errors.items():
+                for error in errors:
+                    flash(error, category="alert")
+        return redirect(url_for("user.setting_page"))
 
 
 @user_bp.route("/post/add", methods=["GET", "POST"])

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Setting{% endblock %}
+
+{% block content %}
+<form action="/setting" method="post">
+    {{ form.csrf_token }}
+    {{ form.password }}
+    {{ form.email }}
+    {{ form.submit }}
+</form>
+{% endblock %}

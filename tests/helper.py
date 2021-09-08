@@ -45,5 +45,5 @@ class TestModel(unittest.TestCase):
 
 def generate_test_data():
     db.create_all()
-    add_user("user", "user", "")
-    add_user("admin", "admin", "", is_admin=True)
+    add_user("user", "user", "user@user.com")
+    add_user("admin", "admin", "admin@admin.com", is_admin=True)
