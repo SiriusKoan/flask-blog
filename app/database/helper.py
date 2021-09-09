@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from .models import db, Users
+from .models import db, Users, Posts
 from ..user_helper import User
 
 
@@ -21,6 +21,7 @@ def add_user(username, password, email, introduction=None, is_admin=False):
     except:
         return False
 
+
 def login_auth(username, password):
     if user := Users.query.filter_by(username=username).first():
         if user.check_password(password):
@@ -29,11 +30,13 @@ def login_auth(username, password):
             return sessionUser
     return False
 
+
 def render_user_data(user_id):
     if user := Users.query.filter_by(id=user_id).first():
         return user_to_dict([user])[0]
     else:
         return False
+
 
 def user_to_dict(user_objects: list):
     li = []
@@ -47,6 +50,7 @@ def user_to_dict(user_objects: list):
         d["register_time"] = user.register_time.strftime("%Y-%m-%d %H:%M:%S")
         li.append(d)
     return li
+
 
 def update_user_data(user_id, password=None, email=None, is_admin=None):
     filter = Users.query.filter_by(id=user_id)
@@ -66,3 +70,41 @@ def update_user_data(user_id, password=None, email=None, is_admin=None):
             return "Username or email is used."
     else:
         return "The user does not exist."
+
+
+def add_post(user_id, title, description, content):
+    post = Posts(user_id, title, description, content)
+    try:
+        db.session.add(post)
+        db.session.commit()
+        return True
+    except:
+        return False
+
+
+def edit_post(post_id, title, description, content):
+    post = Posts.query.filter_by(id=post_id)
+    try:
+        data = {"title": title, "description": description, "content": content}
+        post.update(data)
+        db.session.commit()
+        return True
+    except:
+        return False
+
+
+def render_post(post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+    return {
+        "author_id": post.author_id,
+        "title": post.title,
+        "description": post.description,
+        "content": post.content,
+        "comments": [
+            {
+                "author_id": comment.author_id,
+                "content": comment.content,
+            }
+            for comment in post.comments
+        ],
+    }

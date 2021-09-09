@@ -78,6 +78,8 @@ class UserSettingForm(FlaskForm):
 
 
 class AddPostForm(FlaskForm):
+    title = StringField("title", validators=[DataRequired()])
+    description = StringField("description")
     content = PageDownField("Enter your markdown")
     submit = SubmitField("Submit")
 

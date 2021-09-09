@@ -1,7 +1,15 @@
 from flask import flash, redirect, url_for, request, render_template
 from flask_login import login_required, current_user, login_user, logout_user
-from ..forms import LoginForm, RegisterForm, UserSettingForm
-from ..database import login_auth, add_user, render_user_data, update_user_data
+from ..forms import LoginForm, RegisterForm, UserSettingForm, AddPostForm
+from ..database import (
+    login_auth,
+    add_user,
+    render_user_data,
+    update_user_data,
+    add_post,
+    edit_post,
+    render_post,
+)
 from . import user_bp
 
 
@@ -92,13 +100,54 @@ def user_setting_page():
 @user_bp.route("/post/add", methods=["GET", "POST"])
 @login_required
 def add_post_page():
-    pass
+    form = AddPostForm()
+    if request.method == "GET":
+        return render_template("write.html", form=form, route="/post/add")
+    if request.method == "POST":
+        if form.validate_on_submit():
+            title = form.title.data
+            description = form.description.data
+            content = form.content.data
+            if add_post(current_user.id, title, description, content):
+                flash("Add post.")
+                return redirect(url_for("user.dashboard_page"))
+            else:
+                flash("The title has been used.")
+                return redirect(url_for("user.add_post_page"))
+        else:
+            for _, errors in form.errors.items():
+                for error in errors:
+                    flash(error, category="alert")
+            return redirect(url_for("user.add_post_page"))
 
 
 @user_bp.route("/post/edit/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def edit_post_page(post_id):
-    pass
+    post_data = render_post(post_id)
+    form = AddPostForm(
+        title=post_data["title"],
+        description=post_data["description"],
+        content=post_data["content"],
+    )
+    if request.method == "GET":
+        return render_template("write.html", form=form, route=f"/post/edit/{post_id}")
+    if request.method == "POST":
+        if form.validate_on_submit():
+            title = form.title.data
+            description = form.description.data
+            content = form.content.data
+            if edit_post(post_id, title, description, content):
+                flash("Post edited.")
+                return redirect(url_for("user.dashboard_page"))
+            else:
+                flash("The title has been used.")
+                return redirect(url_for("user.edit_post_page", post_id=post_id))
+        else:
+            for _, errors in form.errors.items():
+                for error in errors:
+                    flash(error, category="alert")
+            return redirect(url_for("user.edit_post_page", post_id=post_id))
 
 
 @user_bp.route("/post/delete/<int:post_id>", methods=["GET"])
