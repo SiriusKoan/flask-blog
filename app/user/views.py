@@ -1,6 +1,13 @@
-from flask import flash, redirect, url_for, request, render_template
+import datetime
+from flask import flash, redirect, url_for, request, render_template, make_response
 from flask_login import login_required, current_user, login_user, logout_user
-from ..forms import LoginForm, RegisterForm, UserSettingForm, AddPostForm
+from ..forms import (
+    DashboardFilterForm,
+    LoginForm,
+    RegisterForm,
+    UserSettingForm,
+    AddPostForm,
+)
 from ..database import (
     login_auth,
     add_user,
@@ -9,6 +16,8 @@ from ..database import (
     add_post,
     edit_post,
     render_post,
+    get_posts,
+    delete_post,
 )
 from . import user_bp
 
@@ -153,13 +162,42 @@ def edit_post_page(post_id):
 @user_bp.route("/post/delete/<int:post_id>", methods=["GET"])
 @login_required
 def delete_post_page(post_id):
-    pass
+    if delete_post(current_user.id, post_id):
+        flash("OK.")
+    else:
+        flash("Failed.")
+    return redirect(url_for("user.dashboard"))
 
 
 @user_bp.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard_page():
-    pass
+    filter_args = {}
+    if start := request.cookies.get("start"):
+        filter_args["start"] = datetime.datetime.strptime(start, "%Y-%m-%d")
+    if end := request.cookies.get("end"):
+        filter_args["end"] = datetime.datetime.strptime(end, "%Y-%m-%d")
+    form = DashboardFilterForm(**filter_args)
+    if request.method == "GET":
+        posts = get_posts(user_id=None, **filter_args)
+        return render_template("dashboard.html", posts=posts, form=form)
+    if request.method == "POST":
+        response = make_response(redirect(url_for("user.dashboard_page")))
+        if form.validate_on_submit():
+            cookies = []
+            if form.start.data:
+                cookies.append(("start", form.start.data.strftime("%Y-%m-%d")))
+            if form.end.data:
+                cookies.append(("end", form.end.data.strftime("%Y-%m-%d")))
+            response.delete_cookie("start")
+            response.delete_cookie("end")
+            for cookie in cookies:
+                response.set_cookie(*cookie)
+        else:
+            for _, errors in form.errors.items():
+                for error in errors:
+                    flash(error, category="alert")
+        return response
 
 
 @user_bp.route("/comments", methods=["GET"])

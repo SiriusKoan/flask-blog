@@ -96,6 +96,7 @@ def edit_post(post_id, title, description, content):
 def render_post(post_id):
     post = Posts.query.filter_by(id=post_id).first()
     return {
+        "id": post.id,
         "author_id": post.author_id,
         "title": post.title,
         "description": post.description,
@@ -108,3 +109,25 @@ def render_post(post_id):
             for comment in post.comments
         ],
     }
+
+
+def get_posts(user_id=None, start=None, end=None):
+    query = Posts.query
+    if user_id:
+        query = query.filter_by(author_id=user_id)
+    if start:
+        query = query.filter(Posts.time > start)
+    if end:
+        query = query.filter(Posts.time < end)
+    posts = [post.id for post in query.all()]
+    posts = list(map(render_post, posts))
+    return posts
+
+def delete_post(user_id, post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+    if post.author_id == user_id:
+        db.session.delete(post)
+        db.session.commit()
+        return True
+    else:
+        return False

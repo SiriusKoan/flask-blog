@@ -9,4 +9,6 @@ from .helper import (
     add_post,
     edit_post,
     render_post,
+    get_posts,
+    delete_post,
 )

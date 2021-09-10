@@ -38,6 +38,9 @@ class Posts(db.Model):
     description = db.Column(db.String)
     content = db.Column(db.String, nullable=False)
     comments = db.relationship("Comments")
+    time = db.Column(
+        db.DateTime, default=datetime.datetime.now, nullable=False
+    )
 
     def __init__(self, author_id, title, description, content):
         self.author_id = author_id
@@ -52,6 +55,9 @@ class Comments(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
     content = db.Column(db.String, nullable=False)
+    time = db.Column(
+        db.DateTime, default=datetime.datetime.now, nullable=False
+    )
 
     def __init__(self, author_id, post_id, content):
         self.author_id = author_id
