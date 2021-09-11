@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from .models import db, Users, Posts
+from .models import Comments, db, Users, Posts
 from ..user_helper import User
 
 
@@ -131,3 +131,36 @@ def delete_post(user_id, post_id):
         return True
     else:
         return False
+
+def get_user_by_username(username):
+    user = Users.query.filter_by(username=username).first()
+    return render_user_data(user.id)
+
+def add_comment(user_id, post_id, content):
+    comment = Comments(user_id, post_id, content)
+    db.session.add(comment)
+    db.session.commit()
+
+def get_comments(post_id):
+    comments = Comments.query.filter_by(post_id=post_id).all()
+    return [
+        {
+            "id": comment.id,
+            "author_id": comment.author_id,
+            "post_id": comment.post_id,
+            "content": comment.content,
+        }
+        for comment in comments
+    ]
+
+def get_user_comments(user_id):
+    comments = Comments.query.filter_by(author_id=user_id).all()
+    return [
+        {
+            "id": comment.id,
+            "author_id": comment.author_id,
+            "post_id": comment.post_id,
+            "content": comment.content,
+        }
+        for comment in comments
+    ]

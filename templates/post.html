@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post['title'] }}{% endblock %}
+
+{% block content %}
+<form action="/post/{{ post['id'] }}" method="post">
+    {{ form.csrf_token }}
+    {{ form.content }}
+    {{ form.submit }}
+</form>
+<div>
+    <div>
+        <div>{{ post['author_id'] }}</div>
+        <div>{{ post['title'] }}</div>
+        <div>{{ post['description'] }}</div>
+        <div>{{ post['time'] }}</div>
+        <div>
+            {{ post['content'] | markdown }}
+        </div>
+    </div>
+</div>
+<div>
+{% for comment in comments %}
+    {{ comment['author_id'] }}
+    {{ comment['content'] }}
+{% endfor %}
+</div>
+{% endblock %}

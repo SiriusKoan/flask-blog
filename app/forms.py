@@ -84,7 +84,7 @@ class AddPostForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class AddCommentFrom(FlaskForm):
+class AddCommentForm(FlaskForm):
     content = StringField("Comment", render_kw={"placeholder": "Comment"})
     submit = SubmitField("Comment")
 

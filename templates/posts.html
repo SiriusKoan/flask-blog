@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Posts{% endblock %}
+
+{% block content %}
+<div>
+    {% for post in posts %}
+    <div>
+        {{ post['author_id'] }}
+        <a href="/post/{{ post['id'] }}">{{ post['title'] }}</a>
+        {{ post['description'] }}
+        {{ post['time'] }}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+from app.database.helper import add_comment, get_comments, get_user_by_username, get_user_comments
 import datetime
 from flask import flash, redirect, url_for, request, render_template, make_response
 from flask_login import login_required, current_user, login_user, logout_user
@@ -7,6 +8,7 @@ from ..forms import (
     RegisterForm,
     UserSettingForm,
     AddPostForm,
+    AddCommentForm,
 )
 from ..database import (
     login_auth,
@@ -203,22 +205,41 @@ def dashboard_page():
 @user_bp.route("/comments", methods=["GET"])
 @login_required
 def comments_dashboard_page():
-    pass
+    comments = get_user_comments(current_user.id)
+    return render_template("comments.html", comments=comments)
 
 
 @user_bp.route("/posts", methods=["GET"])
 @login_required
 def all_posts_page():
-    pass
+    posts = get_posts()
+    return render_template("posts.html", posts=posts)
+
 
 
 @user_bp.route("/post/<int:post_id>", methods=["GET", "POST"])
 @login_required
 def view_post_page(post_id):
-    pass
+    form = AddCommentForm()
+    if request.method == "GET":
+        post = render_post(post_id)
+        comments = get_comments(post_id)
+        return render_template("post.html", post=post, comments=comments, form=form)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            add_comment(current_user.id, post_id, form.content.data)
+            flash("Comment added.")
+        else:
+            for _, errors in form.errors.items():
+                for error in errors:
+                    flash(error, category="alert")
+        return redirect(url_for("user.view_post_page", post_id=post_id))
+
 
 
 @user_bp.route("/@<username>/posts", methods=["GET"])
 @login_required
 def user_posts_page(username):
-    pass
+    user = get_user_by_username(username)
+    posts = get_posts(user["id"])
+    return render_template("posts.html", posts=posts)
