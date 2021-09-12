@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}comments{% endblock %}
+
+{% block content %}
+<form action="/admin_dashboard/comments" method="post">
+    {{ form.csrf_token }}
+    {{ form.start }}
+    {{ form.end }}
+    {{ form.user_id }}
+    {{ form.submit }}
+</form>
+<div>
+{% for comment in comments %}
+    {{ comment['author_id'] }}
+    {{ comment['post_id'] }}
+    {{ comment['content'] }}
+    {{ comment['time'] }}
+    <button>Delete</button>
+{% endfor %}
+</div>
+{% endblock %}

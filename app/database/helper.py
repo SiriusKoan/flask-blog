@@ -123,6 +123,7 @@ def get_posts(user_id=None, start=None, end=None):
     posts = list(map(render_post, posts))
     return posts
 
+
 def delete_post(user_id, post_id):
     post = Posts.query.filter_by(id=post_id).first()
     if post.author_id == user_id:
@@ -132,14 +133,17 @@ def delete_post(user_id, post_id):
     else:
         return False
 
+
 def get_user_by_username(username):
     user = Users.query.filter_by(username=username).first()
     return render_user_data(user.id)
+
 
 def add_comment(user_id, post_id, content):
     comment = Comments(user_id, post_id, content)
     db.session.add(comment)
     db.session.commit()
+
 
 def get_comments(post_id):
     comments = Comments.query.filter_by(post_id=post_id).all()
@@ -153,6 +157,7 @@ def get_comments(post_id):
         for comment in comments
     ]
 
+
 def get_user_comments(user_id):
     comments = Comments.query.filter_by(author_id=user_id).all()
     return [
@@ -164,3 +169,35 @@ def get_user_comments(user_id):
         }
         for comment in comments
     ]
+
+
+def get_all_comments(user_id=None, start=None, end=None):
+    query = Comments.query
+    if user_id:
+        query = query.filter_by(user_id)
+    if start:
+        query = query.filter(Comments.time > start)
+    if end:
+        query = query.filter(Comments.time < end)
+    return [
+        {
+            "id": comment.id,
+            "author_id": comment.author_id,
+            "post_id": comment.post_id,
+            "content": comment.content,
+        }
+        for comment in query.all()
+    ]
+
+
+def get_all_users(user_id=None, username=None, start=None, end=None):
+    query = Users.query
+    if user_id:
+        query = query.filter_by(id=user_id)
+    if username:
+        query = query.filter_by(username=username)
+    if start:
+        query = query.filter(Users.register_time > start)
+    if end:
+        query = query.filter(Users.register_time < end)
+    return user_to_dict(query.all())
