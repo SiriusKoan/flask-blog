@@ -2,6 +2,11 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block extra_import %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="/static/admin.js"></script>
+{% endblock %}
+
 {% block content %}
 <form action="/admin_dashboard/posts" method="post">
     {{ form.csrf_token }}
@@ -17,7 +22,7 @@
         <a href="/post/{{ post['id'] }}">{{ post['title'] }}</a>
         {{ post['description'] }}
         {{ post['time'] }}
-        <button>Delete</button>
+        <button onclick="del_post({{ post['id'] }});">Delete</button>
     </div>
     {% endfor %}
 </div>

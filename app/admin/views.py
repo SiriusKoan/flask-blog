@@ -1,6 +1,6 @@
-from app.database.helper import get_all_users
+from app.database.helper import delete_post_admin, get_all_users
 import datetime
-from flask import redirect, url_for, request, render_template, make_response, flash
+from flask import redirect, url_for, request, render_template, make_response, flash, abort
 from ..forms import AdminDashboardFilter, UserFilterForm
 from ..database import get_posts, get_all_comments
 from . import admin_bp
@@ -118,7 +118,13 @@ def manage_user_page():
 
 @admin_bp.route("/admin_dashboard_posts_backend", methods=["DELETE"])
 def admin_dashboard_posts_backend():
-    pass
+    data = request.get_json(force=True)
+    post_id = data["post_id"]
+    try:
+        delete_post_admin(post_id)
+        return "OK"
+    except:
+        abort(400)
 
 
 @admin_bp.route("/admin_dashboard_comments_backend", methods=["DELETE"])

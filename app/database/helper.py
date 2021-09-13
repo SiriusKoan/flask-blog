@@ -128,6 +128,9 @@ def delete_post(user_id, post_id):
     post = Posts.query.filter_by(id=post_id).first()
     if post.author_id == user_id:
         db.session.delete(post)
+        comments = Comments.query.filter_by(post_id=post_id)
+        for comment in comments:
+            db.session.delete(comment)
         db.session.commit()
         return True
     else:
@@ -201,3 +204,11 @@ def get_all_users(user_id=None, username=None, start=None, end=None):
     if end:
         query = query.filter(Users.register_time < end)
     return user_to_dict(query.all())
+
+def delete_post_admin(post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+    comments = Comments.query.filter_by(post_id=post_id).all()
+    db.session.delete(post)
+    for comment in comments:
+        db.session.delete(comment)
+    db.session.commit()

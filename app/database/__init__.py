@@ -1,5 +1,6 @@
 from .models import db
 from .helper import (
+    delete_post_admin,
     init,
     reset,
     add_user,
@@ -17,4 +18,5 @@ from .helper import (
     get_user_comments,
     get_all_comments,
     get_all_users,
+    delete_post_admin,
 )
