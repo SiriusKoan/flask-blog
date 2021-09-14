@@ -205,10 +205,29 @@ def get_all_users(user_id=None, username=None, start=None, end=None):
         query = query.filter(Users.register_time < end)
     return user_to_dict(query.all())
 
+
 def delete_post_admin(post_id):
     post = Posts.query.filter_by(id=post_id).first()
     comments = Comments.query.filter_by(post_id=post_id).all()
     db.session.delete(post)
     for comment in comments:
         db.session.delete(comment)
+    db.session.commit()
+
+
+def delete_comment_admin(comment_id):
+    comment = Comments.query.filter_by(id=comment_id).first()
+    db.session.delete(comment)
+    db.session.commit()
+
+
+def delete_user(user_id):
+    user = Users.query.filter_by(id=user_id).first()
+    posts = Posts.query.filter_by(author_id=user_id).all()
+    for post in posts:
+        delete_post_admin(post)
+    comments = Comments.query.filter_by(author_id=user_id).all()
+    for comment in comments:
+        db.session.delete(comment)
+    db.session.delete(user)
     db.session.commit()

@@ -1,6 +1,20 @@
-from app.database.helper import delete_post_admin, get_all_users
+from app.database.helper import (
+    delete_comment_admin,
+    delete_post_admin,
+    delete_user,
+    get_all_users,
+    update_user_data,
+)
 import datetime
-from flask import redirect, url_for, request, render_template, make_response, flash, abort
+from flask import (
+    redirect,
+    url_for,
+    request,
+    render_template,
+    make_response,
+    flash,
+    abort,
+)
 from ..forms import AdminDashboardFilter, UserFilterForm
 from ..database import get_posts, get_all_comments
 from . import admin_bp
@@ -53,9 +67,13 @@ def admin_dashboard_comments_page():
     form = AdminDashboardFilter(**filter_args)
     if request.method == "GET":
         comments = get_all_comments(**filter_args)
-        return render_template("admin_dashboard_comments.html", comments=comments, form=form)
+        return render_template(
+            "admin_dashboard_comments.html", comments=comments, form=form
+        )
     if request.method == "POST":
-        response = make_response(redirect(url_for("admin.admin_dashboard_comments_page")))
+        response = make_response(
+            redirect(url_for("admin.admin_dashboard_comments_page"))
+        )
         if form.validate_on_submit():
             cookies = []
             if form.start.data:
@@ -129,9 +147,33 @@ def admin_dashboard_posts_backend():
 
 @admin_bp.route("/admin_dashboard_comments_backend", methods=["DELETE"])
 def admin_dashboard_comments_backend():
-    pass
+    data = request.get_json(force=True)
+    comment_id = data["comment_id"]
+    try:
+        delete_comment_admin(comment_id)
+        return "OK"
+    except:
+        abort(400)
 
 
 @admin_bp.route("/manage_user_backend", methods=["PATCH", "DELETE"])
 def manage_user_backend():
-    pass
+    if request.method == "PATCH":
+        data = request.get_json(force=True)
+        if (
+            update_user_data(
+                data["user_id"], email=data["email"], is_admin=data["is_admin"]
+            )
+            == True
+        ):
+            return "OK"
+        else:
+            abort(400)
+    if request.method == "DELETE":
+        data = request.get_json(force=True)
+        user_id = data["user_id"]
+        try:
+            delete_user(user_id)
+            return "OK"
+        except:
+            abort(400)
