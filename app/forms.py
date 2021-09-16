@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, HiddenField
 from wtforms.fields.html5 import EmailField, DateField, IntegerField
 from wtforms.validators import (
     DataRequired,
@@ -90,6 +90,7 @@ class AddCommentForm(FlaskForm):
 
 
 class AddUserForm(FlaskForm):
+    form_name = HiddenField(render_kw={"value": "add_user"})
     username = StringField(
         "Username",
         validators=[
@@ -132,6 +133,7 @@ class AdminDashboardFilter(FlaskForm):
     submit = SubmitField("Submit")
 
 class UserFilterForm(FlaskForm):
+    form_name = HiddenField(render_kw={"value": "filter"})
     user_id = IntegerField(
         "User ID", render_kw={"placeholder": "User ID"}, validators=[Optional()]
     )
